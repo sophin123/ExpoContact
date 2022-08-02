@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   SafeAreaView,
   FlatList,
   Modal,
@@ -11,9 +10,12 @@ import {
   Pressable,
 } from "react-native";
 
+import { Button } from "react-native-paper";
 import * as Contacts from "expo-contacts";
 import Search from "../Components/Search";
 import ListComponent from "../Components/ListComponent";
+import AddContactScreen from "./AddContactScreen";
+import { width } from "../Styles/style";
 
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
@@ -52,10 +54,12 @@ export default function ContactScreen() {
             setModalVisible(!modalVisible);
           }}
         >
-          <Text>Hello from modal</Text>
-          <Pressable onPress={() => setModalVisible(!modalVisible)}>
-            <Text>X</Text>
-          </Pressable>
+          <AddContactScreen />
+          <Button
+            icon={require("../assets/close.png")}
+            onPress={() => setModalVisible(!modalVisible)}
+            style={{ position: "absolute", bottom: 20, left: width / 2.3 }}
+          />
         </Modal>
       </View>
       <Search />
@@ -72,7 +76,7 @@ export default function ContactScreen() {
         )}
       />
 
-      <Button onPress={() => buttonHandler()} title="Add New Contact" />
+      <Button onPress={() => buttonHandler()}>Add New Contact</Button>
     </View>
   );
 }
