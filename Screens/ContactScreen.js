@@ -6,6 +6,9 @@ import {
   Button,
   SafeAreaView,
   FlatList,
+  Modal,
+  Alert,
+  Pressable,
 } from "react-native";
 
 import * as Contacts from "expo-contacts";
@@ -14,6 +17,7 @@ import ListComponent from "../Components/ListComponent";
 
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -33,12 +37,28 @@ export default function ContactScreen() {
   const buttonHandler = () => {
     console.log("Data is clicked");
     console.log(contactDetails);
+    setModalVisible(!modalVisible);
   };
 
   return (
     <View style={styles.container}>
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Form Closed");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <Text>Hello from modal</Text>
+          <Pressable onPress={() => setModalVisible(!modalVisible)}>
+            <Text>X</Text>
+          </Pressable>
+        </Modal>
+      </View>
       <Search />
-
       <FlatList
         style={styles.flatListStyle}
         data={contactDetails}
@@ -52,7 +72,7 @@ export default function ContactScreen() {
         )}
       />
 
-      <Button onPress={() => buttonHandler()} title="Button" />
+      <Button onPress={() => buttonHandler()} title="Add New Contact" />
     </View>
   );
 }

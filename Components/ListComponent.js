@@ -24,6 +24,9 @@ const styles = StyleSheet.create({
     width: width,
     flexDirection: "row",
     marginTop: 10,
+    borderBottomColor: "grey",
+    borderBottomWidth: 0.6,
+    paddingBottom: 10,
   },
   imageContainer: {
     paddingLeft: 10,
