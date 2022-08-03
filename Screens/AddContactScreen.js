@@ -1,9 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { width } from "../Styles/style";
 
-export default function AddContactScreen() {
+import uuid from "react-native-uuid";
+
+export default function AddContactScreen({
+  finalData,
+  setFinalData,
+  updateData,
+}) {
+  const [firstName, setFirstName] = useState("");
+  const [secondName, setSecondName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const submitHandler = () => {
+    setFinalData({
+      contactType: "person",
+      id: uuid.v4(),
+      firstName,
+      lastName: secondName,
+      phoneNumbers: [
+        {
+          id: uuid.v4(),
+          number: phoneNumber,
+        },
+      ],
+    });
+    updateData();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.formContainer}>
@@ -12,34 +38,50 @@ export default function AddContactScreen() {
         </Text>
         <View style={styles.firstNameContainer}>
           <TextContainer text="First Name" />
-          <TextInputContainer placeholder="FirstName" />
+          <TextInputContainer
+            onChangeText={(e) => setFirstName(e)}
+            value={firstName}
+            placeholder="FirstName"
+          />
         </View>
 
         <View style={styles.firstNameContainer}>
           <TextContainer text="Last Name" />
-          <TextInputContainer placeholder="LastName" />
+          <TextInputContainer
+            onChangeText={(e) => setSecondName(e)}
+            value={secondName}
+            placeholder="LastName"
+          />
         </View>
 
         <View style={styles.firstNameContainer}>
           <TextContainer text="Phone Number" />
-          <TextInputContainer placeholder="Phone Number" />
+          <TextInputContainer
+            onChangeText={(e) => setPhoneNumber(e)}
+            value={phoneNumber}
+            placeholder="Phone Number"
+          />
         </View>
 
         <View style={{ padding: 10 }}>
-          <Button mode="contained">Add</Button>
+          <Button mode="contained" onPress={() => submitHandler()}>
+            Add
+          </Button>
         </View>
       </View>
     </SafeAreaView>
   );
 }
 
-function TextInputContainer({ placeholder }) {
+function TextInputContainer({ placeholder, onChangeText, value }) {
   return (
     <TextInput
       style={{
         width: width / 2,
       }}
       label={placeholder}
+      onChangeText={onChangeText}
+      value={value}
     />
   );
 }
@@ -68,7 +110,6 @@ const styles = StyleSheet.create({
   firstNameContainer: {
     flexDirection: "row",
     marginTop: 10,
-
     justifyContent: "space-between",
   },
 });

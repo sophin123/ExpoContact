@@ -8,6 +8,7 @@ import {
   Modal,
   Alert,
   Pressable,
+  RefreshControl,
 } from "react-native";
 
 import { Button } from "react-native-paper";
@@ -20,6 +21,12 @@ import { width } from "../Styles/style";
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [finalData, setFinalData] = useState([]);
+
+  const [refresh, setRefresh] = useState(false);
+
+  // console.log(contactDetails, "Contact Details");
 
   useEffect(() => {
     (async () => {
@@ -34,13 +41,30 @@ export default function ContactScreen() {
         }
       }
     })();
-  }, []);
+
+    console.log("Use effect called");
+  }, [refresh]);
 
   const buttonHandler = () => {
-    console.log("Data is clicked");
-    console.log(contactDetails);
     setModalVisible(!modalVisible);
   };
+
+  console.log(finalData, "Final Data");
+
+  if (Object.keys(finalData).length > 0) {
+    contactDetails.push(finalData);
+  }
+
+  const updateData = () => {
+    setModalVisible(!modalVisible);
+    console.log(Object.keys(finalData).length, "length");
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefresh(true);
+    let promise = new Promise((resolve) => setTimeout(resolve, 2000));
+    promise.then(() => setRefresh(false));
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -54,7 +78,11 @@ export default function ContactScreen() {
             setModalVisible(!modalVisible);
           }}
         >
-          <AddContactScreen />
+          <AddContactScreen
+            finalData={finalData}
+            setFinalData={setFinalData}
+            updateData={() => updateData()}
+          />
           <Button
             icon={require("../assets/close.png")}
             onPress={() => setModalVisible(!modalVisible)}
@@ -66,12 +94,16 @@ export default function ContactScreen() {
       <FlatList
         style={styles.flatListStyle}
         data={contactDetails}
+        refreshControl={
+          <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
+        }
         renderItem={({ item }) => (
           <ListComponent
-            username={item.name}
-            phoneNumber={item.phoneNumbers.map((data) => {
-              return data.number;
-            })}
+            key={item.id}
+            username={item.firstName}
+            // phoneNumber={item.phoneNumbers.map((data) => {
+            //   return data.number;
+            // })}
           />
         )}
       />
