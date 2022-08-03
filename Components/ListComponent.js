@@ -1,8 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { IconButton } from "react-native-paper";
+
 import { width } from "../Styles/style";
 
-export default function ListComponent({ username, phoneNumber }) {
+export default function ListComponent({
+  firstName,
+  lastName,
+  phoneNumber,
+  onPress,
+}) {
   return (
     <View style={styles.listContainer}>
       <View style={styles.imageContainer}>
@@ -12,8 +19,13 @@ export default function ListComponent({ username, phoneNumber }) {
         />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.mainText}>{username}</Text>
+        <Text style={styles.mainText}>{firstName + " " + lastName}</Text>
         <Text style={styles.subText}>{phoneNumber}</Text>
+      </View>
+      <View style={styles.deleteIconStyle}>
+        <TouchableOpacity onPress={onPress}>
+          <IconButton icon="delete" size={20} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -45,5 +57,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginLeft: 10,
+  },
+  deleteIconStyle: {
+    position: "absolute",
+    right: 20,
   },
 });

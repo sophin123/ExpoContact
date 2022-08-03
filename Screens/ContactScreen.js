@@ -20,32 +20,35 @@ import { width } from "../Styles/style";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-let STORAGE_KEY = "@user_input";
+let STORAGE_KEY = "@contacts_details";
 
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [storeValue, setStoreValue] = useState("");
+  // const [filterData, setFilterData] = useState(contactDetails);
 
   // const [refresh, setRefresh] = useState(false);
 
-  console.log(contactDetails, "Contact Details");
+  // console.log(storeValue, "Store Value");
 
   useEffect(() => {
-    readData();
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-
-        if (data.length > 0) {
-          setContactDetails(data);
-        }
-      }
-    })();
+    // (async () => {
+    //   const { status } = await Contacts.requestPermissionsAsync();
+    //   if (status === "granted") {
+    //     const { data } = await Contacts.getContactsAsync({
+    //       fields: [Contacts.Fields.PhoneNumbers],
+    //     });
+    //     if (data.length > 0) {
+    //       for (let x = 0; x < data.length; x++) {
+    //         setContactDetails((oldContacts) => [
+    //           ...oldContacts,
+    //           Object.values(data)[x],
+    //         ]);
+    //       }
+    //     }
+    //   }
+    // })();
   }, []);
 
   const buttonHandler = () => {
@@ -66,13 +69,16 @@ export default function ContactScreen() {
   const saveData = async () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(contactDetails));
-      // alert("Data successfully saved");
+      alert("Contact added successfully");
+
+      console.log(contactDetails, "save details");
     } catch (e) {
       alert("Faled to save the data");
     }
   };
 
   const readData = async () => {
+    // console.log("read was called");
     try {
       const value = await AsyncStorage.getItem(STORAGE_KEY);
 
@@ -91,6 +97,22 @@ export default function ContactScreen() {
     } catch (e) {
       alert("Failed to clear data");
     }
+  };
+
+  const delHandler = async (id) => {
+    const delUser = contactDetails.filter((item) => item.id !== id);
+    setContactDetails(delUser);
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(delUser));
+      alert("User is being deleted");
+
+      console.log(contactDetails, "save details");
+    } catch (e) {
+      alert("Faled to save the data");
+    }
+
+    // console.log(contactDetails, "Contact Details");
   };
 
   return (
@@ -127,17 +149,21 @@ export default function ContactScreen() {
         renderItem={({ item }) => (
           <ListComponent
             key={item.id}
-            username={item.firstName}
+            firstName={item.firstName}
+            lastName={item.lastName}
             phoneNumber={item.phoneNumbers.map((data) => {
               return data.number;
             })}
+            onPress={() => delHandler(item.id)}
           />
         )}
       />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
-      <Button onPress={() => saveData()}>Save Data</Button>
+      {/* <Button onPress={() => getContactDetails()}>Sync Data</Button> */}
       <Button onPress={() => readData()}>Read Data</Button>
+      {/* <Button onPress={() => saveData()}>Save Data</Button> */}
+      <Button onPress={() => clearStorage()}>Clear Data</Button>
     </View>
   );
 }
