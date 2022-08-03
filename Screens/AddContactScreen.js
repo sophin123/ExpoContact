@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+
 import { Button, TextInput } from "react-native-paper";
 import { width } from "../Styles/style";
 
 import uuid from "react-native-uuid";
 
-export default function AddContactScreen({
-  finalData,
-  setFinalData,
-  updateData,
-  contactDetails,
-}) {
+export default function AddContactScreen({ updateData, contactDetails }) {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");

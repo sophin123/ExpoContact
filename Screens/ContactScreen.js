@@ -18,15 +18,22 @@ import ListComponent from "../Components/ListComponent";
 import AddContactScreen from "./AddContactScreen";
 import { width } from "../Styles/style";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+let STORAGE_KEY = "@user_input";
+
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [storeValue, setStoreValue] = useState("");
+
   // const [refresh, setRefresh] = useState(false);
 
-  // console.log(contactDetails, "Contact Details");
+  console.log(contactDetails, "Contact Details");
 
   useEffect(() => {
+    readData();
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
       if (status === "granted") {
@@ -45,10 +52,9 @@ export default function ContactScreen() {
     setModalVisible(!modalVisible);
   };
 
-  console.log(contactDetails, "Final Data");
-
   const updateData = () => {
     setModalVisible(!modalVisible);
+    saveData();
   };
 
   // const onRefresh = React.useCallback(() => {
@@ -56,6 +62,36 @@ export default function ContactScreen() {
   //   let promise = new Promise((resolve) => setTimeout(resolve, 2000));
   //   promise.then(() => setRefresh(false));
   // }, []);
+
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(contactDetails));
+      // alert("Data successfully saved");
+    } catch (e) {
+      alert("Faled to save the data");
+    }
+  };
+
+  const readData = async () => {
+    try {
+      const value = await AsyncStorage.getItem(STORAGE_KEY);
+
+      if (value !== null) {
+        setContactDetails(JSON.parse(value));
+      }
+    } catch (e) {
+      alert("Failed to fetch the data from storage");
+    }
+  };
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      alert("Data is being reset");
+    } catch (e) {
+      alert("Failed to clear data");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -100,6 +136,8 @@ export default function ContactScreen() {
       />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
+      <Button onPress={() => saveData()}>Save Data</Button>
+      <Button onPress={() => readData()}>Read Data</Button>
     </View>
   );
 }
