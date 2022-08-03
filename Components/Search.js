@@ -10,11 +10,15 @@ import {
 import { width } from "../Styles/style";
 import Button from "./Button";
 
-export default function Search() {
+export default function Search({ searchText }) {
   return (
     <View style={styles.container}>
       <View style={styles.textInputContainer}>
-        <TextInput placeholder="Search" style={styles.inputText} />
+        <TextInput
+          placeholder="Search"
+          style={styles.inputText}
+          onChangeText={searchText}
+        />
       </View>
     </View>
   );

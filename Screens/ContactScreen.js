@@ -26,6 +26,8 @@ export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [searchText, setSearchText] = useState("");
+
   // const [filterData, setFilterData] = useState(contactDetails);
 
   // const [refresh, setRefresh] = useState(false);
@@ -33,22 +35,22 @@ export default function ContactScreen() {
   // console.log(storeValue, "Store Value");
 
   useEffect(() => {
-    // (async () => {
-    //   const { status } = await Contacts.requestPermissionsAsync();
-    //   if (status === "granted") {
-    //     const { data } = await Contacts.getContactsAsync({
-    //       fields: [Contacts.Fields.PhoneNumbers],
-    //     });
-    //     if (data.length > 0) {
-    //       for (let x = 0; x < data.length; x++) {
-    //         setContactDetails((oldContacts) => [
-    //           ...oldContacts,
-    //           Object.values(data)[x],
-    //         ]);
-    //       }
-    //     }
-    //   }
-    // })();
+    (async () => {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status === "granted") {
+        const { data } = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.PhoneNumbers],
+        });
+        if (data.length > 0) {
+          for (let x = 0; x < data.length; x++) {
+            setContactDetails((oldContacts) => [
+              ...oldContacts,
+              Object.values(data)[x],
+            ]);
+          }
+        }
+      }
+    })();
   }, []);
 
   const buttonHandler = () => {
@@ -78,12 +80,11 @@ export default function ContactScreen() {
   };
 
   const readData = async () => {
-    // console.log("read was called");
     try {
       const value = await AsyncStorage.getItem(STORAGE_KEY);
 
       if (value !== null) {
-        setContactDetails(JSON.parse(value));
+        setContactDetails((prev) => JSON.parse(value), contactDetails);
       }
     } catch (e) {
       alert("Failed to fetch the data from storage");
@@ -106,13 +107,43 @@ export default function ContactScreen() {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(delUser));
       alert("User is being deleted");
-
-      console.log(contactDetails, "save details");
     } catch (e) {
       alert("Faled to save the data");
     }
+  };
 
-    // console.log(contactDetails, "Contact Details");
+  const renderItem = ({ item }) => {
+    if (searchText === "") {
+      return (
+        <ListComponent
+          key={item.id}
+          firstName={item.firstName}
+          lastName={item.lastName}
+          phoneNumber={item.phoneNumbers.map((data) => {
+            return data.number;
+          })}
+          onPress={() => delHandler(item.id)}
+        />
+      );
+    }
+
+    if (
+      item.firstName
+        .toUpperCase()
+        .includes(searchText.toUpperCase().trim().replace(/\s/g, ""))
+    ) {
+      return (
+        <ListComponent
+          key={item.id}
+          firstName={item.firstName}
+          lastName={item.lastName}
+          phoneNumber={item.phoneNumbers.map((data) => {
+            return data.number;
+          })}
+          onPress={() => delHandler(item.id)}
+        />
+      );
+    }
   };
 
   return (
@@ -138,7 +169,7 @@ export default function ContactScreen() {
           />
         </Modal>
       </View>
-      <Search />
+      <Search searchText={setSearchText} />
       <FlatList
         keyExtractor={(item) => item.id}
         style={styles.flatListStyle}
@@ -146,17 +177,7 @@ export default function ContactScreen() {
         // refreshControl={
         //   <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
         // }
-        renderItem={({ item }) => (
-          <ListComponent
-            key={item.id}
-            firstName={item.firstName}
-            lastName={item.lastName}
-            phoneNumber={item.phoneNumbers.map((data) => {
-              return data.number;
-            })}
-            onPress={() => delHandler(item.id)}
-          />
-        )}
+        renderItem={renderItem}
       />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
