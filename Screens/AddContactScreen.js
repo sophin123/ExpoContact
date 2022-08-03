@@ -9,13 +9,14 @@ export default function AddContactScreen({
   finalData,
   setFinalData,
   updateData,
+  contactDetails,
 }) {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const submitHandler = () => {
-    setFinalData({
+    contactDetails.push({
       contactType: "person",
       id: uuid.v4(),
       firstName,

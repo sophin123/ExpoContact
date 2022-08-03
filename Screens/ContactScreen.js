@@ -22,9 +22,7 @@ export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [finalData, setFinalData] = useState([]);
-
-  const [refresh, setRefresh] = useState(false);
+  // const [refresh, setRefresh] = useState(false);
 
   // console.log(contactDetails, "Contact Details");
 
@@ -41,30 +39,23 @@ export default function ContactScreen() {
         }
       }
     })();
-
-    console.log("Use effect called");
-  }, [refresh]);
+  }, []);
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
   };
 
-  console.log(finalData, "Final Data");
-
-  if (Object.keys(finalData).length > 0) {
-    contactDetails.push(finalData);
-  }
+  console.log(contactDetails, "Final Data");
 
   const updateData = () => {
     setModalVisible(!modalVisible);
-    console.log(Object.keys(finalData).length, "length");
   };
 
-  const onRefresh = React.useCallback(() => {
-    setRefresh(true);
-    let promise = new Promise((resolve) => setTimeout(resolve, 2000));
-    promise.then(() => setRefresh(false));
-  }, []);
+  // const onRefresh = React.useCallback(() => {
+  //   setRefresh(true);
+  //   let promise = new Promise((resolve) => setTimeout(resolve, 2000));
+  //   promise.then(() => setRefresh(false));
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -79,9 +70,8 @@ export default function ContactScreen() {
           }}
         >
           <AddContactScreen
-            finalData={finalData}
-            setFinalData={setFinalData}
             updateData={() => updateData()}
+            contactDetails={contactDetails}
           />
           <Button
             icon={require("../assets/close.png")}
@@ -92,18 +82,19 @@ export default function ContactScreen() {
       </View>
       <Search />
       <FlatList
+        keyExtractor={(item) => item.id}
         style={styles.flatListStyle}
         data={contactDetails}
-        refreshControl={
-          <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
-        }
+        // refreshControl={
+        //   <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
+        // }
         renderItem={({ item }) => (
           <ListComponent
             key={item.id}
             username={item.firstName}
-            // phoneNumber={item.phoneNumbers.map((data) => {
-            //   return data.number;
-            // })}
+            phoneNumber={item.phoneNumbers.map((data) => {
+              return data.number;
+            })}
           />
         )}
       />
