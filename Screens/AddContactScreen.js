@@ -15,8 +15,7 @@ export default function AddContactScreen({ updateData, contactDetails }) {
     contactDetails.push({
       contactType: "person",
       id: uuid.v4(),
-      firstName,
-      lastName: secondName,
+      name: firstName + " " + secondName,
       phoneNumbers: [
         {
           id: uuid.v4(),

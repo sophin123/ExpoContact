@@ -1,11 +1,20 @@
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import ContactScreen from "./Screens/ContactScreen";
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <ContactScreen />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <ContactScreen />
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }

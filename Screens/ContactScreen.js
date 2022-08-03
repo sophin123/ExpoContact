@@ -18,9 +18,13 @@ import ListComponent from "../Components/ListComponent";
 import AddContactScreen from "./AddContactScreen";
 import { width } from "../Styles/style";
 
+import * as FileSystem from "expo-file-system";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 let STORAGE_KEY = "@contacts_details";
+
+const { StorageAccessFramework } = FileSystem;
 
 export default function ContactScreen() {
   const [contactDetails, setContactDetails] = useState([]);
@@ -42,7 +46,7 @@ export default function ContactScreen() {
           fields: [Contacts.Fields.PhoneNumbers],
         });
         if (data.length > 0) {
-          for (let x = 0; x < data.length; x++) {
+          for (let x = 0; x < 6; x++) {
             setContactDetails((oldContacts) => [
               ...oldContacts,
               Object.values(data)[x],
@@ -52,6 +56,8 @@ export default function ContactScreen() {
       }
     })();
   }, []);
+
+  console.log(contactDetails, "Contact Details");
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
@@ -117,8 +123,7 @@ export default function ContactScreen() {
       return (
         <ListComponent
           key={item.id}
-          firstName={item.firstName}
-          lastName={item.lastName}
+          personName={item.name}
           phoneNumber={item.phoneNumbers.map((data) => {
             return data.number;
           })}
@@ -135,10 +140,9 @@ export default function ContactScreen() {
       return (
         <ListComponent
           key={item.id}
-          firstName={item.firstName}
-          lastName={item.lastName}
+          personName={item.name}
           phoneNumber={item.phoneNumbers.map((data) => {
-            return data.number;
+            data.number;
           })}
           onPress={() => delHandler(item.id)}
         />
@@ -146,6 +150,31 @@ export default function ContactScreen() {
     }
   };
 
+  const saveFile = async () => {
+    const permission =
+      await StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+    if (permission.granted) {
+      let directoryUri = permission.directoryUri;
+      let data = JSON.stringify(contactDetails);
+
+      await StorageAccessFramework.createFileAsync(
+        directoryUri,
+        "TestingFileName2",
+        "application/json"
+      )
+        .then(async (fileUri) => {
+          await FileSystem.writeAsStringAsync(fileUri, data, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      alert("Allow permission to save");
+    }
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -183,7 +212,7 @@ export default function ContactScreen() {
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
       {/* <Button onPress={() => getContactDetails()}>Sync Data</Button> */}
       <Button onPress={() => readData()}>Read Data</Button>
-      {/* <Button onPress={() => saveData()}>Save Data</Button> */}
+      <Button onPress={() => saveFile()}>Save File Data</Button>
       <Button onPress={() => clearStorage()}>Clear Data</Button>
     </View>
   );

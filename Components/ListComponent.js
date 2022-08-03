@@ -4,12 +4,7 @@ import { IconButton } from "react-native-paper";
 
 import { width } from "../Styles/style";
 
-export default function ListComponent({
-  firstName,
-  lastName,
-  phoneNumber,
-  onPress,
-}) {
+export default function ListComponent({ personName, phoneNumber, onPress }) {
   return (
     <View style={styles.listContainer}>
       <View style={styles.imageContainer}>
@@ -19,7 +14,7 @@ export default function ListComponent({
         />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.mainText}>{firstName + " " + lastName}</Text>
+        <Text style={styles.mainText}>{personName}</Text>
         <Text style={styles.subText}>{phoneNumber}</Text>
       </View>
       <View style={styles.deleteIconStyle}>
