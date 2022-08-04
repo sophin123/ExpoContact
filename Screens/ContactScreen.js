@@ -21,6 +21,7 @@ import { width } from "../Styles/style";
 import * as FileSystem from "expo-file-system";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import EditContact from "../Components/EditContact";
 
 let STORAGE_KEY = "@contacts_details";
 
@@ -31,6 +32,10 @@ export default function ContactScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [searchText, setSearchText] = useState("");
+  const [sendEditData, setSendEditData] = useState([]);
+
+  const [editModalView, setEditModalView] = useState(false);
+  const [editData, setEditData] = useState();
 
   // const [filterData, setFilterData] = useState(contactDetails);
 
@@ -39,25 +44,26 @@ export default function ContactScreen() {
   // console.log(storeValue, "Store Value");
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-        if (data.length > 0) {
-          for (let x = 0; x < 6; x++) {
-            setContactDetails((oldContacts) => [
-              ...oldContacts,
-              Object.values(data)[x],
-            ]);
-          }
-        }
-      }
-    })();
+    // (async () => {
+    //   const { status } = await Contacts.requestPermissionsAsync();
+    //   if (status === "granted") {
+    //     const { data } = await Contacts.getContactsAsync({
+    //       fields: [Contacts.Fields.PhoneNumbers],
+    //     });
+    //     if (data.length > 0) {
+    //       for (let x = 0; x < 6; x++) {
+    //         setContactDetails((oldContacts) => [
+    //           ...oldContacts,
+    //           Object.values(data)[x],
+    //         ]);
+    //       }
+    //     }
+    //   }
+    // })();
+    readData();
   }, []);
 
-  console.log(contactDetails, "Contact Details");
+  console.log(editData, "Contact Details");
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
@@ -118,6 +124,14 @@ export default function ContactScreen() {
     }
   };
 
+  const editHandler = (id) => {
+    setEditModalView(!editModalView);
+
+    const editResult = contactDetails.filter((item) => item.id === id);
+
+    setEditData(Object.values(editResult)[0]);
+  };
+
   const renderItem = ({ item }) => {
     if (searchText === "") {
       return (
@@ -127,13 +141,14 @@ export default function ContactScreen() {
           phoneNumber={item.phoneNumbers.map((data) => {
             return data.number;
           })}
-          onPress={() => delHandler(item.id)}
+          onPressDel={() => delHandler(item.id)}
+          onPressEdit={() => editHandler(item.id)}
         />
       );
     }
 
     if (
-      item.firstName
+      item.name
         .toUpperCase()
         .includes(searchText.toUpperCase().trim().replace(/\s/g, ""))
     ) {
@@ -144,13 +159,14 @@ export default function ContactScreen() {
           phoneNumber={item.phoneNumbers.map((data) => {
             data.number;
           })}
-          onPress={() => delHandler(item.id)}
+          onPressDel={() => delHandler(item.id)}
+          onPressEdit={() => editHandler(item.id)}
         />
       );
     }
   };
 
-  const saveFile = async () => {
+  const exportFile = async () => {
     const permission =
       await StorageAccessFramework.requestDirectoryPermissionsAsync();
 
@@ -175,6 +191,7 @@ export default function ContactScreen() {
       alert("Allow permission to save");
     }
   };
+
   return (
     <View style={styles.container}>
       <View>
@@ -208,11 +225,16 @@ export default function ContactScreen() {
         // }
         renderItem={renderItem}
       />
+      <EditContact
+        visible={editModalView}
+        onPressCancel={() => setEditModalView(!editModalView)}
+        item={editData}
+      />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
       {/* <Button onPress={() => getContactDetails()}>Sync Data</Button> */}
       <Button onPress={() => readData()}>Read Data</Button>
-      <Button onPress={() => saveFile()}>Save File Data</Button>
+      <Button onPress={() => exportFile()}>Export File Data</Button>
       <Button onPress={() => clearStorage()}>Clear Data</Button>
     </View>
   );
