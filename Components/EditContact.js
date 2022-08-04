@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Modal } from "react-native";
 import { IconButton, TextInput, Button } from "react-native-paper";
 
@@ -11,18 +11,10 @@ export default function EditContact({
   saveData,
   editModalHander,
 }) {
-  const [newName, setNewName] = useState(item != null ? item.name : "");
-  const [newNumber, setNewNumber] = useState(
-    item != null
-      ? item.phoneNumbers
-          .map((item) => {
-            return item.number;
-          })
-          .toString()
-      : ""
-  );
+  const [newName, setNewName] = useState();
+  const [newNumber, setNewNumber] = useState();
 
-  //   console.log(newName, newNumber, "chaging values");
+  //   console.log(item, "chaging values");
 
   const saveEditedHandler = (id) => {
     const result = contactDetails.filter((item) => item.id === id);
@@ -38,6 +30,8 @@ export default function EditContact({
 
     saveData(2);
     editModalHander();
+    setNewName("");
+    setNewNumber("");
   };
 
   return (
@@ -46,19 +40,27 @@ export default function EditContact({
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Edit Contact</Text>
+            <Text
+              style={{
+                fontWeight: "bold",
+                paddingBottom: 10,
+              }}
+            >
+              {!item ? "No Contact Found" : item.name}
+            </Text>
 
             <TextInput
               label="Username"
               type="flat"
               style={styles.textInputStyle}
-              value={item != null ? newName : ""}
+              value={newName}
               onChangeText={setNewName}
             />
             <TextInput
               label="Phone Number"
               type="flat"
               style={styles.textInputStyle}
-              value={item != null ? newNumber : ""}
+              value={newNumber}
               onChangeText={setNewNumber}
             />
             <View
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 20,

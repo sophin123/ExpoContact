@@ -9,6 +9,7 @@ import {
   Alert,
   Pressable,
   RefreshControl,
+  ToastAndroid,
 } from "react-native";
 
 import { Button } from "react-native-paper";
@@ -22,30 +23,13 @@ import * as FileSystem from "expo-file-system";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import EditContact from "../Components/EditContact";
+import * as DocumentPicker from "expo-document-picker";
 
 let STORAGE_KEY = "@contacts_details";
 
 const { StorageAccessFramework } = FileSystem;
 
 export default function ContactScreen() {
-  const [contactDetails, setContactDetails] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const [searchText, setSearchText] = useState("");
-  const [sendselectedEditData, setSendEditData] = useState([]);
-
-  const [editModalView, setEditModalView] = useState(false);
-  const [selectedEditData, setselectedEditData] = useState();
-
-  const [newUserName, setNewUserName] = useState("");
-  const [newPhoneNumber, setNewPhoneNumber] = useState("");
-
-  // const [filterData, setFilterData] = useState(contactDetails);
-
-  // const [refresh, setRefresh] = useState(false);
-
-  // console.log(storeValue, "Store Value");
-
   useEffect(() => {
     // (async () => {
     //   const { status } = await Contacts.requestPermissionsAsync();
@@ -66,7 +50,25 @@ export default function ContactScreen() {
     readData();
   }, []);
 
-  console.log(newUserName, newPhoneNumber, "Contact Details");
+  const [contactDetails, setContactDetails] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [searchText, setSearchText] = useState("");
+  const [sendselectedEditData, setSendEditData] = useState([]);
+
+  const [editModalView, setEditModalView] = useState(false);
+  const [selectedEditData, setselectedEditData] = useState();
+
+  const [newUserName, setNewUserName] = useState("");
+  const [newPhoneNumber, setNewPhoneNumber] = useState("");
+
+  // const [filterData, setFilterData] = useState(contactDetails);
+
+  // const [refresh, setRefresh] = useState(false);
+
+  // console.log(storeValue, "Store Value");
+
+  // console.log(newUserName, newPhoneNumber, "Contact Details");
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
@@ -88,11 +90,13 @@ export default function ContactScreen() {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(contactDetails));
       if (id === 2) {
         alert("Edited Succesfully");
+      } else if (id === 3) {
+        ToastAndroid.show("Contact Saved Successfully", ToastAndroid.SHORT);
       } else {
         alert("Contact added successfully");
       }
 
-      console.log(contactDetails, "save details");
+      // console.log(contactDetails, "save details");
     } catch (e) {
       alert("Faled to save the data");
     }
@@ -103,8 +107,10 @@ export default function ContactScreen() {
       const value = await AsyncStorage.getItem(STORAGE_KEY);
 
       if (value !== null) {
-        setContactDetails((prev) => JSON.parse(value), contactDetails);
+        setContactDetails(JSON.parse(value));
       }
+
+      console.log(value, "Value");
     } catch (e) {
       alert("Failed to fetch the data from storage");
     }
@@ -182,7 +188,7 @@ export default function ContactScreen() {
 
       await StorageAccessFramework.createFileAsync(
         directoryUri,
-        "TestingFileName2",
+        "TestingFileName",
         "application/json"
       )
         .then(async (fileUri) => {
@@ -195,6 +201,53 @@ export default function ContactScreen() {
         });
     } else {
       alert("Allow permission to save");
+    }
+  };
+
+  const importFile = async () => {
+    const result = await DocumentPicker.getDocumentAsync();
+
+    if (result.type === "success") {
+      if (!result.name.includes("TestingFileName.json")) {
+        ToastAndroid.show(
+          "You have selected TestingFileName.json",
+          ToastAndroid.SHORT
+        );
+        return;
+      } else {
+        ToastAndroid.show(
+          `You have picked the file : ${result.name}`,
+          ToastAndroid.SHORT
+        );
+      }
+
+      const { uri } = result;
+      if (uri) {
+        try {
+          const jsonContacts = await FileSystem.readAsStringAsync(uri);
+          const parsedContacts = JSON.parse(jsonContacts);
+
+          const ExistingID = [];
+
+          contactDetails.map((data) => {
+            const { id } = data;
+            ExistingID.push(id);
+          });
+
+          // const newContacts = [];
+
+          parsedContacts.map((data) => {
+            const { id } = data;
+            const exist = ExistingID.find((currentID) => currentID === id);
+
+            if (!exist) {
+              setContactDetails((prev) => [...prev, data]);
+            }
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
     }
   };
 
@@ -241,10 +294,11 @@ export default function ContactScreen() {
       />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>
-      {/* <Button onPress={() => getContactDetails()}>Sync Data</Button> */}
+      <Button onPress={() => importFile()}>import Data</Button>
       <Button onPress={() => readData()}>Read Data</Button>
       <Button onPress={() => exportFile()}>Export File Data</Button>
       <Button onPress={() => clearStorage()}>Clear Data</Button>
+      <Button onPress={() => saveData(3)}>Save Data</Button>
     </View>
   );
 }
