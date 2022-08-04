@@ -12,7 +12,7 @@ import {
   ToastAndroid,
 } from "react-native";
 
-import { Button } from "react-native-paper";
+import { Button, IconButton, ToggleButton } from "react-native-paper";
 import * as Contacts from "expo-contacts";
 import Search from "../Components/Search";
 import ListComponent from "../Components/ListComponent";
@@ -41,6 +41,7 @@ export default function ContactScreen() {
   const [sendselectedEditData, setSendEditData] = useState([]);
 
   const [editModalView, setEditModalView] = useState(false);
+  const [optionModalView, setOptionModalView] = useState(false);
   const [selectedEditData, setselectedEditData] = useState();
 
   const [newUserName, setNewUserName] = useState("");
@@ -319,13 +320,45 @@ export default function ContactScreen() {
         editModalHander={() => setEditModalView(!editModalView)}
       />
 
-      <Button onPress={() => buttonHandler()}>Add New Contact</Button>
-      <Button onPress={() => importFile()}>import Data</Button>
-      <Button onPress={() => readData()}>Read Data</Button>
-      <Button onPress={() => exportFile()}>Export File Data</Button>
-      <Button onPress={() => clearStorage()}>Clear Data</Button>
-      <Button onPress={() => saveData(3)}>Save Data</Button>
-      <Button onPress={() => syncData()}>Sync Data</Button>
+      <IconButton
+        icon={require("../assets/arrow.png")}
+        size={25}
+        onPress={() => setOptionModalView(!optionModalView)}
+      />
+
+      <View>
+        <Modal
+          visible={optionModalView}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setOptionModalView(!optionModalView)}
+        >
+          <View style={styles.optionModalView}>
+            <IconButton
+              style={{
+                position: "relative",
+                top: 0,
+                left: width / 2.3,
+                transform: [
+                  {
+                    rotate: "180deg",
+                  },
+                ],
+              }}
+              icon={require("../assets/arrow.png")}
+              size={25}
+              onPress={() => setOptionModalView(!optionModalView)}
+            />
+            <Button onPress={() => buttonHandler()}>Add New Contact</Button>
+            <Button onPress={() => importFile()}>import Data</Button>
+            <Button onPress={() => readData()}>Read Data</Button>
+            <Button onPress={() => exportFile()}>Export File Data</Button>
+            <Button onPress={() => clearStorage()}>Clear Data</Button>
+            <Button onPress={() => saveData(3)}>Save Data</Button>
+            <Button onPress={() => syncData()}>Sync Data</Button>
+          </View>
+        </Modal>
+      </View>
     </View>
   );
 }
@@ -337,5 +370,12 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     padding: 10,
+  },
+  optionModalView: {
+    position: "absolute",
+    bottom: 0,
+    width: width,
+
+    backgroundColor: "yellow",
   },
 });
