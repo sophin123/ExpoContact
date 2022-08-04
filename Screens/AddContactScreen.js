@@ -6,7 +6,12 @@ import { width } from "../Styles/style";
 
 import uuid from "react-native-uuid";
 
-export default function AddContactScreen({ updateData, contactDetails }) {
+export default function AddContactScreen({
+  updateData,
+  contactDetails,
+  setOptionModalView,
+  optionModalView,
+}) {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -24,6 +29,7 @@ export default function AddContactScreen({ updateData, contactDetails }) {
       ],
     });
     updateData();
+    setOptionModalView(!optionModalView);
   };
 
   return (

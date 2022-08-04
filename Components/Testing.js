@@ -67,10 +67,16 @@ const contactDetails = [
 
 // const editData = newCotactDetails.map((item) => item.name === "User changes")
 
-let result = contactDetails.filter((data) => data.id == 2);
+// let result = contactDetails.filter((data) => data.id == 2);
 
-if (result) {
-  result.map((data) => (data.name = "User changes"));
-}
+// if (result) {
+//   result.map((data) => (data.name = "User changes"));
+// }
 
-console.log(contactDetails);
+// console.log(contactDetails);
+
+const array = ["food", "rice", "apple", "house", "dog", "ant", "ball", "fish"];
+
+array.sort((a, b) => a.localeCompare(b));
+
+console.log(array);

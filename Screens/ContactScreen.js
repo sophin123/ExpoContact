@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Pressable,
   RefreshControl,
   ToastAndroid,
+  Animated,
 } from "react-native";
 
 import { Button, IconButton, ToggleButton } from "react-native-paper";
@@ -277,6 +278,11 @@ export default function ContactScreen() {
       });
     }
   };
+  // console.log(contactDetails);
+
+  const sortHandler = () => {
+    contactDetails.sort((a, b) => a.name.localeCompare(b.name));
+  };
 
   return (
     <View style={styles.container}>
@@ -293,6 +299,8 @@ export default function ContactScreen() {
           <AddContactScreen
             updateData={() => updateData()}
             contactDetails={contactDetails}
+            optionModalView={optionModalView}
+            setOptionModalView={setOptionModalView}
           />
           <Button
             icon={require("../assets/close.png")}
@@ -328,8 +336,8 @@ export default function ContactScreen() {
 
       <View>
         <Modal
-          visible={optionModalView}
           animationType="slide"
+          visible={optionModalView}
           transparent={true}
           onRequestClose={() => setOptionModalView(!optionModalView)}
         >
@@ -356,6 +364,7 @@ export default function ContactScreen() {
             <Button onPress={() => clearStorage()}>Clear Data</Button>
             <Button onPress={() => saveData(3)}>Save Data</Button>
             <Button onPress={() => syncData()}>Sync Data</Button>
+            <Button onPress={() => sortHandler()}>Sort Data</Button>
           </View>
         </Modal>
       </View>
