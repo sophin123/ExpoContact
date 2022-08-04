@@ -31,22 +31,6 @@ const { StorageAccessFramework } = FileSystem;
 
 export default function ContactScreen() {
   useEffect(() => {
-    // (async () => {
-    //   const { status } = await Contacts.requestPermissionsAsync();
-    //   if (status === "granted") {
-    //     const { data } = await Contacts.getContactsAsync({
-    //       fields: [Contacts.Fields.PhoneNumbers],
-    //     });
-    //     if (data.length > 0) {
-    //       for (let x = 0; x < 6; x++) {
-    //         setContactDetails((oldContacts) => [
-    //           ...oldContacts,
-    //           Object.values(data)[x],
-    //         ]);
-    //       }
-    //     }
-    //   }
-    // })();
     readData();
   }, []);
 
@@ -109,8 +93,6 @@ export default function ContactScreen() {
       if (value !== null) {
         setContactDetails(JSON.parse(value));
       }
-
-      console.log(value, "Value");
     } catch (e) {
       alert("Failed to fetch the data from storage");
     }
@@ -251,6 +233,50 @@ export default function ContactScreen() {
     }
   };
 
+  const syncData = async () => {
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === "granted") {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers],
+      });
+
+      try {
+        const ExistingID = [];
+
+        contactDetails.map((data) => {
+          const { id } = data;
+          ExistingID.push(id);
+        });
+
+        // console.log(ExistingID, "Existing ID");
+
+        // data.map((data) => {
+        //   const { id } = data;
+        //   const exist = ExistingID.find((currentID) => currentID === id);
+
+        //   if (!exist) {
+        //     setContactDetails((prev) => [...prev, data[0]]);
+        //   }
+        // });
+      } catch (e) {
+        console.log(e);
+      }
+
+      const newContacts = [];
+
+      // console.log(contactDetails);
+      if (data.length > 0) {
+        for (let x = 0; x < 2; x++) {
+          newContacts.push(Object.values(data)[x]);
+        }
+      }
+
+      newContacts.map((data) => {
+        setContactDetails((prev) => [...prev, data]);
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -299,6 +325,7 @@ export default function ContactScreen() {
       <Button onPress={() => exportFile()}>Export File Data</Button>
       <Button onPress={() => clearStorage()}>Clear Data</Button>
       <Button onPress={() => saveData(3)}>Save Data</Button>
+      <Button onPress={() => syncData()}>Sync Data</Button>
     </View>
   );
 }
