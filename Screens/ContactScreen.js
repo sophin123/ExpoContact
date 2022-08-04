@@ -78,6 +78,8 @@ export default function ContactScreen() {
         alert("Edited Succesfully");
       } else if (id === 3) {
         ToastAndroid.show("Contact Saved Successfully", ToastAndroid.SHORT);
+      } else if (id === 4) {
+        ToastAndroid.show("List Sorted", ToastAndroid.SHORT);
       } else {
         alert("Contact added successfully");
       }
@@ -282,6 +284,8 @@ export default function ContactScreen() {
 
   const sortHandler = () => {
     contactDetails.sort((a, b) => a.name.localeCompare(b.name));
+    saveData(4);
+    setOptionModalView(!optionModalView);
   };
 
   return (
