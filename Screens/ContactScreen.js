@@ -32,10 +32,13 @@ export default function ContactScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [searchText, setSearchText] = useState("");
-  const [sendEditData, setSendEditData] = useState([]);
+  const [sendselectedEditData, setSendEditData] = useState([]);
 
   const [editModalView, setEditModalView] = useState(false);
-  const [editData, setEditData] = useState();
+  const [selectedEditData, setselectedEditData] = useState();
+
+  const [newUserName, setNewUserName] = useState("");
+  const [newPhoneNumber, setNewPhoneNumber] = useState("");
 
   // const [filterData, setFilterData] = useState(contactDetails);
 
@@ -63,7 +66,7 @@ export default function ContactScreen() {
     readData();
   }, []);
 
-  console.log(editData, "Contact Details");
+  console.log(newUserName, newPhoneNumber, "Contact Details");
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
@@ -80,10 +83,14 @@ export default function ContactScreen() {
   //   promise.then(() => setRefresh(false));
   // }, []);
 
-  const saveData = async () => {
+  const saveData = async (id) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(contactDetails));
-      alert("Contact added successfully");
+      if (id === 2) {
+        alert("Edited Succesfully");
+      } else {
+        alert("Contact added successfully");
+      }
 
       console.log(contactDetails, "save details");
     } catch (e) {
@@ -126,10 +133,9 @@ export default function ContactScreen() {
 
   const editHandler = (id) => {
     setEditModalView(!editModalView);
+    const result = contactDetails.filter((item) => item.id === id);
 
-    const editResult = contactDetails.filter((item) => item.id === id);
-
-    setEditData(Object.values(editResult)[0]);
+    setselectedEditData(Object.values(result)[0]);
   };
 
   const renderItem = ({ item }) => {
@@ -228,7 +234,10 @@ export default function ContactScreen() {
       <EditContact
         visible={editModalView}
         onPressCancel={() => setEditModalView(!editModalView)}
-        item={editData}
+        item={selectedEditData}
+        contactDetails={contactDetails}
+        saveData={(id) => saveData(id)}
+        editModalHander={() => setEditModalView(!editModalView)}
       />
 
       <Button onPress={() => buttonHandler()}>Add New Contact</Button>

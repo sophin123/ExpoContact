@@ -55,22 +55,22 @@ const contactDetails = [
   },
 ];
 
-var newArray = [
-  {
-    id: "232432",
-    firstName: "Sophn",
-    lastname: "Shrestha",
-    phonNumber: [
-      {
-        id: "2",
-        mobile: "456343242",
-      },
-    ],
-  },
-];
+// const dataObject = contactDetails.map((data) => {
+//   return data.id;
+// });
 
-for (let x = 0; x < contactDetails.length; x++) {
-  newArray.push(Object.values(contactDetails)[x]);
+// const matchIndex = (elem) => elem === "2";
+
+// const findIndex = dataObject.findIndex(matchIndex);
+
+// const newCotactDetails = contactDetails.splice(1, 1);
+
+// const editData = newCotactDetails.map((item) => item.name === "User changes")
+
+let result = contactDetails.filter((data) => data.id == 2);
+
+if (result) {
+  result.map((data) => (data.name = "User changes"));
 }
 
-console.log(newArray);
+console.log(contactDetails);
