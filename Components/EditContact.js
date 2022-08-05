@@ -14,8 +14,6 @@ export default function EditContact({
   const [newName, setNewName] = useState();
   const [newNumber, setNewNumber] = useState();
 
-  //   console.log(item, "chaging values");
-
   const saveEditedHandler = (id) => {
     const result = contactDetails.filter((item) => item.id === id);
 

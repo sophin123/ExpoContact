@@ -9,8 +9,8 @@ import uuid from "react-native-uuid";
 export default function AddContactScreen({
   updateData,
   contactDetails,
-  setOptionModalView,
-  optionModalView,
+  // setOptionModalView,
+  // optionModalView,
 }) {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
@@ -29,7 +29,7 @@ export default function AddContactScreen({
       ],
     });
     updateData();
-    setOptionModalView(!optionModalView);
+    // setOptionModalView(!optionModalView);
   };
 
   return (

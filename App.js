@@ -1,11 +1,8 @@
-import { StatusBar } from "expo-status-bar";
 import {
   Keyboard,
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
-  View,
 } from "react-native";
 import ContactScreen from "./Screens/ContactScreen";
 

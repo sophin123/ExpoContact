@@ -1,19 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
-  SafeAreaView,
   FlatList,
   Modal,
   Alert,
-  Pressable,
-  RefreshControl,
   ToastAndroid,
-  Animated,
+  Platform,
 } from "react-native";
 
-import { Button, IconButton, ToggleButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import * as Contacts from "expo-contacts";
 import Search from "../Components/Search";
 import ListComponent from "../Components/ListComponent";
@@ -39,22 +35,10 @@ export default function ContactScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [searchText, setSearchText] = useState("");
-  const [sendselectedEditData, setSendEditData] = useState([]);
 
   const [editModalView, setEditModalView] = useState(false);
   const [optionModalView, setOptionModalView] = useState(false);
   const [selectedEditData, setselectedEditData] = useState();
-
-  const [newUserName, setNewUserName] = useState("");
-  const [newPhoneNumber, setNewPhoneNumber] = useState("");
-
-  // const [filterData, setFilterData] = useState(contactDetails);
-
-  // const [refresh, setRefresh] = useState(false);
-
-  // console.log(storeValue, "Store Value");
-
-  // console.log(newUserName, newPhoneNumber, "Contact Details");
 
   const buttonHandler = () => {
     setModalVisible(!modalVisible);
@@ -65,26 +49,26 @@ export default function ContactScreen() {
     saveData();
   };
 
-  // const onRefresh = React.useCallback(() => {
-  //   setRefresh(true);
-  //   let promise = new Promise((resolve) => setTimeout(resolve, 2000));
-  //   promise.then(() => setRefresh(false));
-  // }, []);
-
   const saveData = async (id) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(contactDetails));
       if (id === 2) {
         alert("Edited Succesfully");
       } else if (id === 3) {
-        ToastAndroid.show("Contact Saved Successfully", ToastAndroid.SHORT);
+        if (Platform.OS !== "android") {
+          alert("Contact Saved Succesfully");
+        } else {
+          ToastAndroid.show("Contact Saved Successfully", ToastAndroid.SHORT);
+        }
       } else if (id === 4) {
-        ToastAndroid.show("List Sorted", ToastAndroid.SHORT);
+        if (Platform.OS !== "android") {
+          alert("List Sorted");
+        } else {
+          ToastAndroid.show("List Sorted", ToastAndroid.SHORT);
+        }
       } else {
         alert("Contact added successfully");
       }
-
-      // console.log(contactDetails, "save details");
     } catch (e) {
       alert("Faled to save the data");
     }
@@ -195,16 +179,24 @@ export default function ContactScreen() {
 
     if (result.type === "success") {
       if (!result.name.includes("TestingFileName.json")) {
-        ToastAndroid.show(
-          "You have selected TestingFileName.json",
-          ToastAndroid.SHORT
-        );
+        if (Platform.OS !== "android") {
+          alert("You have selected TestingFileName.json");
+        } else {
+          ToastAndroid.show(
+            "You have selected TestingFileName.json",
+            ToastAndroid.SHORT
+          );
+        }
         return;
       } else {
-        ToastAndroid.show(
-          `You have picked the file : ${result.name}`,
-          ToastAndroid.SHORT
-        );
+        if (Platform.OS !== "android") {
+          alert(`You have picked the file : ${result.name}`);
+        } else {
+          ToastAndroid.show(
+            `You have picked the file : ${result.name}`,
+            ToastAndroid.SHORT
+          );
+        }
       }
 
       const { uri } = result;
@@ -219,8 +211,6 @@ export default function ContactScreen() {
             const { id } = data;
             ExistingID.push(id);
           });
-
-          // const newContacts = [];
 
           parsedContacts.map((data) => {
             const { id } = data;
@@ -251,24 +241,12 @@ export default function ContactScreen() {
           const { id } = data;
           ExistingID.push(id);
         });
-
-        // console.log(ExistingID, "Existing ID");
-
-        // data.map((data) => {
-        //   const { id } = data;
-        //   const exist = ExistingID.find((currentID) => currentID === id);
-
-        //   if (!exist) {
-        //     setContactDetails((prev) => [...prev, data[0]]);
-        //   }
-        // });
       } catch (e) {
         console.log(e);
       }
 
       const newContacts = [];
 
-      // console.log(contactDetails);
       if (data.length > 0) {
         for (let x = 0; x < 2; x++) {
           newContacts.push(Object.values(data)[x]);
@@ -280,7 +258,6 @@ export default function ContactScreen() {
       });
     }
   };
-  // console.log(contactDetails);
 
   const sortHandler = () => {
     contactDetails.sort((a, b) => a.name.localeCompare(b.name));
@@ -301,9 +278,8 @@ export default function ContactScreen() {
           }}
         >
           <AddContactScreen
-            updateData={() => updateData()}
             contactDetails={contactDetails}
-            optionModalView={optionModalView}
+            updateData={() => updateData()}
             setOptionModalView={setOptionModalView}
           />
           <Button
@@ -361,9 +337,9 @@ export default function ContactScreen() {
               size={25}
               onPress={() => setOptionModalView(!optionModalView)}
             />
-            <Button onPress={() => buttonHandler()}>Add New Contact</Button>
+
             <Button onPress={() => importFile()}>import Data</Button>
-            <Button onPress={() => readData()}>Read Data</Button>
+
             <Button onPress={() => exportFile()}>Export File Data</Button>
             <Button onPress={() => clearStorage()}>Clear Data</Button>
             <Button onPress={() => saveData(3)}>Save Data</Button>
@@ -371,6 +347,10 @@ export default function ContactScreen() {
             <Button onPress={() => sortHandler()}>Sort Data</Button>
           </View>
         </Modal>
+      </View>
+
+      <View>
+        <Button onPress={() => buttonHandler()}>Add New Contact</Button>
       </View>
     </View>
   );
